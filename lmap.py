@@ -1,20 +1,22 @@
 import argparse
 import pandas as pd
 import merger
-import merger_merger
+#import merger_merger
 from subprocess import Popen, PIPE
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()  # pylint: disable=invalid-name
-    parser.add_argument("-a", "--annotation", help="Annotation file (.gff3 format)")
+    parser.add_argument("-i", "--input", help="Input file")
+    parser.add_argument("-o", "--output", help="Output file")
     args = parser.parse_args()  # pylint: disable=invalid-name
 
     keep = True
     while keep:
         keep = False
 
-        merger('input.csv','merged.csv')
-        df = pd.read_csv('merged.csv', sep=',', comment="#")
+        merger.merger(args.input, 'merged.csv')
+        break
+        df = pd.read_csv('merged.csv', sep=',', comment="#", low_memory=False, skiprows=1)
         df = df.transpose()
         df.loc['new_chr'] = 1
         frames = [df.loc[['Marker', 'new_chr']], df[5:]]
@@ -34,3 +36,4 @@ if __name__ == "__main__":
         if has_duplicated_cm:
             merger_merger('assda')
             keep = True
+        break

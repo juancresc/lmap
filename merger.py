@@ -101,12 +101,12 @@ def group_nonmatched(nonmatched):
 def merger(input_file_name, output_file_name ):
 	input_file = list(csv.reader(open(input_file_name, 'rb'), delimiter=','))
 	d = {}
-	for line in input_file:
+	for line in input_file[1:]:
 		str_line = "".join(line[3:len(line)])
 		d[line[0]] = str_line
 
 
-	d_full = list((key, value) for key, value in d.iteritems())
+	#d_full = list((key, value) for key, value in d.iteritems())
 	d_no_wc = list((key,value) for key, value in d.iteritems() if not "-" in value)
 	d_wc = list((key,value) for key, value in d.iteritems() if "-" in value)
 
@@ -136,7 +136,6 @@ def merger(input_file_name, output_file_name ):
 		for id in ids:
 			id_clean = id.replace(" ","")
 			for line in input_file:
-				print line[0]
 				if line[0] == id_clean:
 					positions.setdefault(line[1], []).append( (id_clean,line[2]) )
 		#get most common element in list (dict keys)
@@ -156,4 +155,5 @@ def merger(input_file_name, output_file_name ):
 		row.append(item[4]) #id from position and chr
 		for c in item[1]:
 			row.append(c)
-		output_file.write("\t".join(row) + "\n")
+		output_file.write(",".join(row) + "\n")
+	output_file.close()
