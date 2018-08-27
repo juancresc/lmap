@@ -12,12 +12,12 @@ if __name__ == "__main__":
     args = parser.parse_args()  # pylint: disable=invalid-name
 
     keep = True
-    print "Merging..."
+    print("Merging...")
     merger.merger(args.input, 'merged.csv')
     copyfile("merged.csv", "merged_.csv")
     while keep:
         keep = False
-        print "RQTL..."
+        print("RQTL...")
         df = pd.read_csv('merged_.csv', sep=',', comment="#", header=None)
         df.rename(columns={0: 'Marker'}, inplace=True)
         df['new_chr'] = 1
@@ -26,15 +26,15 @@ if __name__ == "__main__":
         df = pd.concat(frames)
         df.rename(index={'Marker': 'id'}, inplace=True)
         df.rename(index={'new_chr': ''}, inplace=True)
-        df.to_csv('rqtl.csv', header=None)
+        df.to_csv('rqtl.csv', header=None, )
         cmd_list = ['Rscript', 'rqtl.R']
         p = Popen(cmd_list, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if err:
             print('Error in RQTL', err)
             exit()
-        print 'out', out
-        print "Finding duplicated..."
+        print('out', out)
+        print("Finding duplicated...")
         df_map = pd.read_csv('map.csv', sep=',', comment='#')
         df_map.columns = ['marker', 'LG', 'cM']
         has_duplicated_cm = False
@@ -44,7 +44,7 @@ if __name__ == "__main__":
             chromosome = v.LG
             if chromosome in chrs and pos in chrs[chromosome]:
                 has_duplicated_cm = True
-                print "duplicated: ", chromosome, " ", pos
+                print("duplicates found")
                 break
             chrs.setdefault(chromosome, []).append(pos)
 
@@ -57,11 +57,11 @@ if __name__ == "__main__":
         df_res = df_res[cols]
         df_res.to_csv('merged_2.csv', header=None, sep=",", index=None)
         if has_duplicated_cm:
-            print "Duplicated found, restarting..."
+            print("Duplicated found, restarting...")
             merger_merger.merger_merger('merged_2.csv', 'merged_.csv')
             keep = True
         else:
-            print "No duplicated positions"
+            print("No duplicated positions")
 
     df_res.rename({0: 'marker', 1: 'ref_chromosome', 2: 'ref_position'}, axis=1, inplace=True)
     df_res.to_csv('table.csv', sep=',', index=None)

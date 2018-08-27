@@ -22,31 +22,30 @@ def merger_merger(input_file_name, output_file_name):
         pos_refseq = v[2]
         chromosome = v[3]
         position = v[4]
-        marker_position = v[5]
-        sequence = v[6:]
+        sequence = v[5:]
         sequence = ''.join(sequence.tolist())
-        tuple_ = (marker, chromosome, position, sequence, chr_refseq, pos_refseq, marker_position)
+        tuple_ = (marker, chromosome, position, sequence, chr_refseq, pos_refseq)
         groups.setdefault(str(chromosome) + '_' + str(position), []).append(tuple_)
 
     result = []
     prev_sequence = False
 
-    for k in sorted(groups.iterkeys()):
+    for k,v in sorted(groups.items()):
         group = groups[k]
         if len(group) == 1:
-            marker, chromosome, position, sequence, chr_refseq, pos_refseq, marker_position = group[0]
+            marker, chromosome, position, sequence, chr_refseq, pos_refseq = group[0]
             str_marker = marker
         else:
             seqs = {}
             markers = []
             for element in group:
-                marker, chromosome, position, sequence, chr_refseq, pos_refseq, marker_position = element
+                marker, chromosome, position, sequence, chr_refseq, pos_refseq = element
                 seqs[marker] = sequence
                 markers.append(marker)
             values = {}
-            for marker, sequence in seqs.iteritems():
+            for marker, sequence in seqs.items():
                 values[marker] = matches(sequence, prev_sequence)
-            marker = max(values.iteritems(), key=operator.itemgetter(1))[0]
+            marker = max(values.items(), key=operator.itemgetter(1))[0]
             sequence = seqs[marker]
             str_marker = ':'.join(markers)
         prev_sequence = sequence
