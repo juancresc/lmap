@@ -9,12 +9,16 @@ mapthis <- read.cross("csv", getwd(), "rqtl.csv", crosstype = "riself", estimate
 
 #crea grupos de ligamiento, tarda mucho...
 mapthis <- est.rf(mapthis)
-lg <- formLinkageGroups(mapthis, max.rf=0.35, min.lod=10)
-table(lg[,2])
-
-#reorganiza los marcadores utilizando los grupos de ligamiento anteriores
-mapthis <- formLinkageGroups(mapthis, max.rf=0.35, min.lod=20, reorgMarkers=TRUE)
+mapthis <- formLinkageGroups(mapthis, max.rf=0.35, min.lod=10, reorgMarkers=TRUE)
 mapthis <- orderMarkers(mapthis, map.function = 'haldane', error.prob=0.005)
+
+#mapthis
+
+#order <- compareorder(mapthis, chr=1, c(11:1,12:19), error.prob=0.005)
+#mapthis <- switch.order(mapthis, chr=1, c(1:num_rows), error.prob=0.005)  
+
+write.csv(pull.map(mapthis, as.table = TRUE), file = "map.csv")
+
 #for(current_lg in unique(lg$LG)){
 #mapthis <- orderMarkers(mapthis, map.function = 'haldane', chr=current_lg, error.prob=0.005)
 #  num_rows <- nrow(lg[lg$LG==current_lg,])
@@ -26,6 +30,4 @@ mapthis <- orderMarkers(mapthis, map.function = 'haldane', error.prob=0.005)
 #    mapthis <- switch.order(mapthis, chr=current_lg, c(1:num_rows), error.prob=0.005)  
 #  }
 #}
-
-write.csv(pull.map(mapthis, as.table = TRUE), file = "map.csv")
 
