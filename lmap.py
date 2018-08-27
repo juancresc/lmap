@@ -9,6 +9,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()  # pylint: disable=invalid-name
     parser.add_argument("-i", "--input", help="Input file")
     parser.add_argument("-o", "--output", help="Output file")
+    parser.add_argument("-l", "--lod", help="min.lod for RQTL", type=int, default=6)
+    parser.add_argument("-r", "--rf", help="max.rf for RQTL", type=float, default=0.35)
     args = parser.parse_args()  # pylint: disable=invalid-name
 
     keep = True
@@ -27,12 +29,12 @@ if __name__ == "__main__":
         df.rename(index={'Marker': 'id'}, inplace=True)
         df.rename(index={'new_chr': ''}, inplace=True)
         df.to_csv('rqtl.csv', header=None, )
-        cmd_list = ['Rscript', 'rqtl.R']
+        cmd_list = ['Rscript', 'rqtl.R', str(args.lod), str(args.rf)]
         p = Popen(cmd_list, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if err:
             print('Error in RQTL (if it\'s a warning, dismiss)', err)
-            #exit()
+            # exit()
         print('out', out)
         print("Finding duplicated...")
         df_map = pd.read_csv('map.csv', sep=',', comment='#')
@@ -64,12 +66,16 @@ if __name__ == "__main__":
             print("No duplicated positions")
 
     df_res.rename({0: 'marker', 1: 'ref_chromosome', 2: 'ref_position'}, axis=1, inplace=True)
-    df_res.to_csv('table.csv', sep=',', index=None)
+    cols = list(df_res.columns[:5])
+    df_original = pd.read_csv(args.input, sep=',', comment="#")
+    cols += list(df_original.columns[3:])
+    df_res.columns = cols
+    df_res.to_csv(args.output, sep=',', index=None)
 
-    #order each LG respect to phisical position
+    # order each LG respect to phisical position
 
-    #order all LG respect to phisical position
+    # order all LG respect to phisical position
 
-    #run rqtl again
+    # run rqtl again
 
-    #valildate positions
+    # valildate positions

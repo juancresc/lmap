@@ -3,13 +3,17 @@ list.of.packages <- c("qtl")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
+args <- commandArgs(trailingOnly = TRUE)
+minlod <- args[1]
+maxrf <- args[2]
+
 library(qtl)
 #setwd(dirname(rstudioapi::getActiveDocumentContext()$path));
 mapthis <- read.cross("csv", getwd(), "rqtl.csv", crosstype = "riself", estimate.map= FALSE)
 
 #crea grupos de ligamiento, tarda mucho...
 mapthis <- est.rf(mapthis)
-mapthis <- formLinkageGroups(mapthis, max.rf=0.35, min.lod=10, reorgMarkers=TRUE)
+mapthis <- formLinkageGroups(mapthis, max.rf=maxrf, min.lod=minlod, reorgMarkers=TRUE)
 mapthis <- orderMarkers(mapthis, map.function = 'haldane', error.prob=0.005)
 
 #mapthis
