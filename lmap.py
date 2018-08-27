@@ -31,8 +31,8 @@ if __name__ == "__main__":
         p = Popen(cmd_list, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if err:
-            print('Error in RQTL', err)
-            exit()
+            print('Error in RQTL (if it\'s a warning, dismiss)', err)
+            #exit()
         print('out', out)
         print("Finding duplicated...")
         df_map = pd.read_csv('map.csv', sep=',', comment='#')
