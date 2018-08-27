@@ -22,7 +22,7 @@ if __name__ == "__main__":
         df.rename(columns={0: 'Marker'}, inplace=True)
         df['new_chr'] = 1
         df = df.transpose()
-        frames = [df.loc[['Marker', 'new_chr']], df[4:-1]]
+        frames = [df.loc[['Marker', 'new_chr']], df[3:-1]]
         df = pd.concat(frames)
         df.rename(index={'Marker': 'id'}, inplace=True)
         df.rename(index={'new_chr': ''}, inplace=True)
