@@ -149,7 +149,7 @@ def merger(input_file_name, output_file_name ):
 	output_file = open(output_file_name, 'w')
 	for item in final:
 		row = list()
-		row.append(item[0]) # ids
+		row.append('"' + item[0] + '"') # ids
 		row.append(item[2]) #chromosome
 		row.append(item[3]) #position
 		row.append(item[4]) #id from position and chr

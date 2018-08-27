@@ -4,12 +4,12 @@ new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"
 if(length(new.packages)) install.packages(new.packages)
 
 library(qtl)
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path));
-mapthis <- read.cross("csv", "", "Prueba.csv", crosstype = "riself", estimate.map= FALSE)
+#setwd(dirname(rstudioapi::getActiveDocumentContext()$path));
+mapthis <- read.cross("csv", getwd(), "rqtl.csv", crosstype = "riself", estimate.map= FALSE)
 
 #crea grupos de ligamiento, tarda mucho...
 mapthis <- est.rf(mapthis)
-lg <- formLinkageGroups(mapthis, max.rf=0.35, min.lod=20)
+lg <- formLinkageGroups(mapthis, max.rf=0.35, min.lod=10)
 table(lg[,2])
 
 #reorganiza los marcadores utilizando los grupos de ligamiento anteriores
