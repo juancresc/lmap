@@ -6,28 +6,28 @@ from fnmatch import fnmatch
 import sys, csv
 import time
 
+
 def group_wc_in_full(d_wc, merge_full):
-    reslist = []
     res_no_matches = []
     for wc in d_wc:
         matches = 0
+        keys = []
+        count = 0
         for full in merge_full:
             if match(full[1], wc[1]):
+                keys.append(count)
                 matches += 1
+            count += 1
         if matches == 1:
-            cont = 0
-            for full in merge_full:
-                if match(full[1], wc[1]):
-                    new_key = full[0] + ", (" + wc[0] + ")"
-                    merge_full[cont] = (new_key, full[1])
-                cont += 1
+            for k in keys:
+                full = merge_full[k]
+                new_key = full[0] + ", (" + wc[0] + ")"
+                merge_full[k] = (new_key, full[1])
         if matches > 1:
-            cont = 0
-            for full in merge_full:
-                if match(full[1], wc[1]):
-                    new_key = full[0] + ", [" + wc[0] + "]"
-                    merge_full[cont] = (new_key, full[1])
-                cont += 1
+            for k in keys:
+                full = merge_full[k]
+                new_key = full[0] + ", (" + wc[0] + ")"
+                merge_full[k] = (new_key, full[1])
         if matches == 0:
             res_no_matches.append(wc)
     return merge_full, res_no_matches
@@ -108,6 +108,7 @@ def merger(input_file_name, output_file_name):
     input_file_csv = csv.reader(input_file, delimiter=',')
     input_file_list = list(input_file_csv)
     d = {}
+    print('initial',len(input_file_list[1:]))
     for line in input_file_list[1:]:
         str_line = "".join(line[3:len(line)])
         d[line[0]] = str_line
@@ -129,6 +130,7 @@ def merger(input_file_name, output_file_name):
         merged_wc_no_match = []
 
     final = merged_wc_no_match + merge_full_wc
+
     idx = 0
     for row in final:
         positions = {}
@@ -145,33 +147,23 @@ def merger(input_file_name, output_file_name):
                     positions.setdefault(line[1], []).append((id_clean, line[2]))
         # get most common element in list (dict keys)
         # if position:
-        if len(positions) > 0:
-            chromosome = max(set(positions.keys()), key=list(positions.keys()).count)
-            _id, position = min(positions[chromosome], key=lambda x: x[1])
-            final[idx] += (chromosome, position, _id,)
-        else:
-            final[idx] += ('', '', '',)
+        chromosome = max(set(positions.keys()), key=list(positions.keys()).count)
+
+        _id, position = min(positions[chromosome], key=lambda x: x[1])
+        final[idx] += (chromosome, position, _id,)
         idx += 1
+
     output_file = open(output_file_name, 'w')
     for item in final:
         row = list()
-        row.append('"' + item[0] + '"')  # ids
+        row.append('"' + item[0] + '"')  #  ids
         row.append(item[2])  # chromosome
         row.append(item[3])  # position
         for c in item[1]:
             row.append(c)
         output_file.write(",".join(row) + "\n")
+
     print('end', len(final))
     elapsed_time = time.process_time() - t
     print(elapsed_time, 'in seconds')
     output_file.close()
-
-
-if __name__ == "__main__":
-    import argparse
-
-    parser = argparse.ArgumentParser()  # pylint: disable=invalid-name
-    parser.add_argument("-i", "--input", help="Input file")
-    parser.add_argument("-o", "--output", help="Output file")
-    args = parser.parse_args()  # pylint: disable=invalid-name
-    merger(args.input, args.output)

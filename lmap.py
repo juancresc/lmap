@@ -33,7 +33,7 @@ if __name__ == "__main__":
         p = Popen(cmd_list, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if err:
-            print('Error in RQTL (if it\'s a warning, dismiss)', err)
+            print('In in RQTL (if it\'s a warning, dismiss, if it\'s an erorr, check)', err)
             # exit()
         print('out', out)
         print("Finding duplicated...")
@@ -41,15 +41,16 @@ if __name__ == "__main__":
         df_map.columns = ['marker', 'LG', 'cM']
         has_duplicated_cm = False
         chrs = {}
+        dups = 0
         for k, v in df_map.iterrows():
             pos = str(round(v.cM, 2))
             chromosome = v.LG
             if chromosome in chrs and pos in chrs[chromosome]:
                 has_duplicated_cm = True
-                print("duplicates found")
-                break
+                dups += 1
             chrs.setdefault(chromosome, []).append(pos)
-
+        if dups > 0:
+            print("duplicates found", dups)
         df_merger = pd.read_csv('merged_.csv', sep=',', comment="#", header=None)
         max_col = max(df_merger.columns)
         df_res = pd.merge(df_merger, df_map, left_on=0, right_on='marker')
@@ -59,7 +60,7 @@ if __name__ == "__main__":
         df_res = df_res[cols]
         df_res.to_csv('merged_2.csv', header=None, sep=",", index=None)
         if has_duplicated_cm:
-            print("Duplicated found, restarting...")
+            print("Restarting RQTL...")
             merger_merger.merger_merger('merged_2.csv', 'merged_.csv')
             keep = True
         else:

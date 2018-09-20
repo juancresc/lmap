@@ -4,5 +4,7 @@
 .ipynb_checkpoints/
 .Rhistory
 data/
+ __pycache__/
 .csv#
 *.csv
+*.pyc
