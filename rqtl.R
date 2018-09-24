@@ -14,7 +14,7 @@ mapthis <- read.cross("csv", getwd(), "rqtl.csv", crosstype = "riself", estimate
 #crea grupos de ligamiento, tarda mucho...
 mapthis <- est.rf(mapthis)
 mapthis <- formLinkageGroups(mapthis, max.rf=maxrf, min.lod=minlod, reorgMarkers=TRUE)
-mapthis <- orderMarkers(mapthis, map.function = 'haldane', error.prob=0.005)
+mapthis <- orderMarkers(mapthis, map.function = 'haldane', error.prob=0.05,maxit=500,use.ripple = FALSE)
 
 #mapthis
 

@@ -7,8 +7,8 @@ from shutil import copyfile
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()  # pylint: disable=invalid-name
-    parser.add_argument("-i", "--input", help="Input file")
-    parser.add_argument("-o", "--output", help="Output file")
+    parser.add_argument("-i", "--input", help="Input file", required=True)
+    parser.add_argument("-o", "--output", help="Output file", required=True)
     parser.add_argument("-l", "--lod", help="min.lod for RQTL", type=int, default=6)
     parser.add_argument("-r", "--rf", help="max.rf for RQTL", type=float, default=0.35)
     args = parser.parse_args()  # pylint: disable=invalid-name
