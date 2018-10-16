@@ -49,7 +49,7 @@ if __name__ == "__main__":
     chrs = {}
     dups = 0
     for k, v in df_map.iterrows():
-        pos = str(round(v.cM, 2))
+        pos = str(round(v.cM, 1))
         chromosome = v.LG
         if chromosome in chrs and pos in chrs[chromosome]:
             has_duplicated_cm = True
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     df_res = pd.merge(df_merger, df_map, left_on=0, right_on='marker')
     df_res.drop('marker', axis=1, inplace=True)
     import ipdb
-    ipdb.set_trace()
+    #ipdb.set_trace()
     cols = [0, 1, 2, 'LG', 'cM'] + [l for l in range(3, max_col + 1)]
     df_res = df_res[cols]
     df_res.rename({0: 'marker'}, axis=1, inplace=True)

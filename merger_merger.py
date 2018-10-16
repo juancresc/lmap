@@ -22,7 +22,7 @@ def merger_merger(input_file_name, output_file_name):
         pos_refseq = v[2]
         chromosome = v[3]
         position = v[4]
-        position_rounded = str(round(position, 2))
+        position_rounded = str(round(position, 1))
         sequence = v[5:]
         sequence = ''.join(sequence.tolist())
         tuple_ = (marker, chromosome, position, sequence, chr_refseq, pos_refseq)
