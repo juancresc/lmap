@@ -59,7 +59,7 @@ if __name__ == "__main__":
     max_col = max(df_merger.columns)
     df_res = pd.merge(df_merger, df_map, left_on=0, right_on='marker')
     df_res.drop('marker', axis=1, inplace=True)
-    import ipdb
+    #import ipdb
     #ipdb.set_trace()
     cols = [0, 1, 2, 'LG', 'cM'] + [l for l in range(3, max_col + 1)]
     df_res = df_res[cols]
