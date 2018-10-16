@@ -61,6 +61,8 @@ if __name__ == "__main__":
     df_res.drop('marker', axis=1, inplace=True)
     cols = [0, 1, 2, 'LG', 'cM'] + [l for l in range(3, max_col + 1)]
     df_res = df_res[cols]
+    import ipdb
+    ipdb.set_trace()
     if has_duplicated_cm:
         print("duplicates found", dups)
         print(chrs)
