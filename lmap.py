@@ -4,6 +4,7 @@ import merger
 import merger_merger
 from subprocess import Popen, PIPE
 from shutil import copyfile
+import os
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()  # pylint: disable=invalid-name
@@ -12,7 +13,9 @@ if __name__ == "__main__":
     parser.add_argument("-l", "--lod", help="min.lod for RQTL", type=int, default=6)
     parser.add_argument("-r", "--rf", help="max.rf for RQTL", type=float, default=0.35)
     args = parser.parse_args()  # pylint: disable=invalid-name
-
+    for f in ['merged.csv','merged_.csv','merged_2.csv','map.csv']:
+        if os.path.exists(f):
+            os.remove(f)
     keep = True
     print("Merging...")
     merger.merger(args.input, 'merged.csv')
@@ -30,6 +33,7 @@ if __name__ == "__main__":
         df.rename(index={'new_chr': ''}, inplace=True)
         df.to_csv('rqtl.csv', header=None, )
         cmd_list = ['Rscript', 'rqtl.R', str(args.lod), str(args.rf)]
+        print(' '.join(cmd_list))
         p = Popen(cmd_list, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if err:
@@ -43,7 +47,7 @@ if __name__ == "__main__":
         chrs = {}
         dups = 0
         for k, v in df_map.iterrows():
-            pos = str(round(v.cM, 2))
+            pos = str(round(v.cM, 3))
             chromosome = v.LG
             if chromosome in chrs and pos in chrs[chromosome]:
                 has_duplicated_cm = True
@@ -51,6 +55,7 @@ if __name__ == "__main__":
             chrs.setdefault(chromosome, []).append(pos)
         if dups > 0:
             print("duplicates found", dups)
+            print(chrs)
         df_merger = pd.read_csv('merged_.csv', sep=',', comment="#", header=None)
         max_col = max(df_merger.columns)
         df_res = pd.merge(df_merger, df_map, left_on=0, right_on='marker')

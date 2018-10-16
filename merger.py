@@ -163,7 +163,7 @@ def merger(input_file_name, output_file_name):
         output_file.write(",".join(row) + "\n")
     print('end', len(final))
     elapsed_time = time.process_time() - t
-    print(elapsed_time, 'in seconds')
+    print('in seconds: ', elapsed_time)
     output_file.close()
 
 

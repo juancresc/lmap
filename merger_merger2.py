@@ -22,19 +22,15 @@ def merger_merger(input_file_name, output_file_name):
         pos_refseq = v[2]
         chromosome = v[3]
         position = v[4]
-        position = str(round(position, 3))
         sequence = v[5:]
         sequence = ''.join(sequence.tolist())
         tuple_ = (marker, chromosome, position, sequence, chr_refseq, pos_refseq)
         groups.setdefault(str(chromosome) + '_' + str(position), []).append(tuple_)
-
-    result = []
     prev_sequence = False
-
+    result = []
     for k,v in sorted(groups.items()):
         group = groups[k]
-        print(k, len(group))
-        if len(group) == 1 or not prev_sequence:
+        if len(group) == 1:
             marker, chromosome, position, sequence, chr_refseq, pos_refseq = group[0]
             str_marker = marker
         else:
@@ -53,5 +49,6 @@ def merger_merger(input_file_name, output_file_name):
         prev_sequence = sequence
         result.append(
             [str_marker] + [chr_refseq] + [pos_refseq] + list(sequence))
+
     df = pd.DataFrame(result)
     df.to_csv(output_file_name, sep=",", index=False, header=False)
