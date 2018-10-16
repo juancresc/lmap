@@ -26,8 +26,10 @@ mapthis <- orderMarkers(mapthis, map.function = 'haldane', error.prob=0.005,)
 
 #order <- compareorder(mapthis, chr=1, c(11:1,12:19), error.prob=0.005)
 #mapthis <- switch.order(mapthis, chr=1, c(1:num_rows), error.prob=0.005)  
-t <- pull.map(mapthis, as.table = TRUE)
-t2 <- pull.map(mapthis, as.table = TRUE)
+#t <- pull.map(mapthis, as.table = TRUE)
+mapthis <- jittermap(mapthis)
+#t2 <- pull.map(mapthis, as.table = TRUE)
+#t2 <- pull.map(mapthis, as.table = TRUE)
 write.csv(pull.map(mapthis, as.table = TRUE), file = "map.csv")
 
 #for(current_lg in unique(lg$LG)){

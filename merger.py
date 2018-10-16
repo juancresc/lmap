@@ -108,6 +108,7 @@ def merger(input_file_name, output_file_name):
     input_file_csv = csv.reader(input_file, delimiter=',')
     input_file_list = list(input_file_csv)
     d = {}
+    print('start', len(input_file_list[1:]))
     for line in input_file_list[1:]:
         str_line = "".join(line[3:len(line)])
         d[line[0]] = str_line

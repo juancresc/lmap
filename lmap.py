@@ -17,59 +17,64 @@ if __name__ == "__main__":
         if os.path.exists(f):
             os.remove(f)
     keep = True
+
+    #merge similar markers
     print("Merging...")
     merger.merger(args.input, 'merged.csv')
     copyfile("merged.csv", "merged_.csv")
-    while keep:
-        keep = False
-        print("RQTL...")
-        df = pd.read_csv('merged_.csv', sep=',', comment="#", header=None)
-        df.rename(columns={0: 'Marker'}, inplace=True)
-        df['new_chr'] = 1
-        df = df.transpose()
-        frames = [df.loc[['Marker', 'new_chr']], df[3:-1]]
-        df = pd.concat(frames)
-        df.rename(index={'Marker': 'id'}, inplace=True)
-        df.rename(index={'new_chr': ''}, inplace=True)
-        df.to_csv('rqtl.csv', header=None, )
-        cmd_list = ['Rscript', 'rqtl.R', str(args.lod), str(args.rf)]
-        print(' '.join(cmd_list))
-        p = Popen(cmd_list, stdout=PIPE, stderr=PIPE)
-        out, err = p.communicate()
-        if err:
-            print('In in RQTL (if it\'s a warning, dismiss, if it\'s an erorr, check)', err)
-            # exit()
-        print('out', out)
-        print("Finding duplicated...")
-        df_map = pd.read_csv('map.csv', sep=',', comment='#')
-        df_map.columns = ['marker', 'LG', 'cM']
-        has_duplicated_cm = False
-        chrs = {}
-        dups = 0
-        for k, v in df_map.iterrows():
-            pos = str(round(v.cM, 3))
-            chromosome = v.LG
-            if chromosome in chrs and pos in chrs[chromosome]:
-                has_duplicated_cm = True
-                dups += 1
-            chrs.setdefault(chromosome, []).append(pos)
-        if dups > 0:
-            print("duplicates found", dups)
-            print(chrs)
+
+    #Prepare and run RQTL
+    print("RQTL...")
+    df = pd.read_csv('merged_.csv', sep=',', comment="#", header=None)
+    df.rename(columns={0: 'Marker'}, inplace=True)
+    df['new_chr'] = 1
+    df = df.transpose()
+    frames = [df.loc[['Marker', 'new_chr']], df[3:-1]]
+    df = pd.concat(frames)
+    df.rename(index={'Marker': 'id'}, inplace=True)
+    df.rename(index={'new_chr': ''}, inplace=True)
+    df.to_csv('rqtl.csv', header=None, )
+    cmd_list = ['Rscript', 'rqtl.R', str(args.lod), str(args.rf)]
+    print(' '.join(cmd_list))
+    p = Popen(cmd_list, stdout=PIPE, stderr=PIPE)
+    out, err = p.communicate()
+    if err:
+        print('In in RQTL (if it\'s a warning, dismiss, if it\'s an erorr, check)', err)
+        # exit()
+    print('out', out)
+    print("Finding duplicated...")
+    df_map = pd.read_csv('map.csv', sep=',', comment='#')
+    df_map.columns = ['marker', 'LG', 'cM']
+    has_duplicated_cm = False
+    chrs = {}
+    dups = 0
+    for k, v in df_map.iterrows():
+        pos = str(round(v.cM, 3))
+        chromosome = v.LG
+        if chromosome in chrs and pos in chrs[chromosome]:
+            has_duplicated_cm = True
+            dups += 1
+        chrs.setdefault(chromosome, []).append(pos)
+    df_merger = pd.read_csv('merged_.csv', sep=',', comment="#", header=None)
+    max_col = max(df_merger.columns)
+    df_res = pd.merge(df_merger, df_map, left_on=0, right_on='marker')
+    df_res.drop('marker', axis=1, inplace=True)
+    cols = [0, 1, 2, 'LG', 'cM'] + [l for l in range(3, max_col + 1)]
+    df_res = df_res[cols]
+    if has_duplicated_cm:
+        print("duplicates found", dups)
+        print(chrs)
+        df_res.to_csv('merged_2.csv', header=None, sep=",", index=None)
+        merger_merger.merger_merger('merged_2.csv', 'merged_.csv')
         df_merger = pd.read_csv('merged_.csv', sep=',', comment="#", header=None)
         max_col = max(df_merger.columns)
         df_res = pd.merge(df_merger, df_map, left_on=0, right_on='marker')
-        df_res.cM = df_res.cM.round(2)
         df_res.drop('marker', axis=1, inplace=True)
         cols = [0, 1, 2, 'LG', 'cM'] + [l for l in range(3, max_col + 1)]
         df_res = df_res[cols]
-        df_res.to_csv('merged_2.csv', header=None, sep=",", index=None)
-        if has_duplicated_cm:
-            print("Restarting RQTL...")
-            merger_merger.merger_merger('merged_2.csv', 'merged_.csv')
-            keep = True
-        else:
-            print("No duplicated positions")
+        keep = False
+    else:
+        print("No duplicated positions")
 
     df_res.rename({0: 'marker', 1: 'ref_chromosome', 2: 'ref_position'}, axis=1, inplace=True)
     cols = list(df_res.columns[:5])
