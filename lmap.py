@@ -61,8 +61,7 @@ if __name__ == "__main__":
     df_res.drop('marker', axis=1, inplace=True)
     cols = [0, 1, 2, 'LG', 'cM'] + [l for l in range(3, max_col + 1)]
     df_res = df_res[cols]
-    import ipdb
-    ipdb.set_trace()
+
     if has_duplicated_cm:
         print("duplicates found", dups)
         print(chrs)
@@ -71,18 +70,18 @@ if __name__ == "__main__":
         df_merger = pd.read_csv('merged_.csv', sep=',', comment="#", header=None)
         max_col = max(df_merger.columns)
         df_res = pd.merge(df_merger, df_map, left_on=0, right_on='marker')
-        df_res.drop('marker', axis=1, inplace=True)
-        cols = [0, 1, 2, 'LG', 'cM'] + [l for l in range(3, max_col + 1)]
-        df_res = df_res[cols]
         keep = False
     else:
         print("No duplicated positions")
-
+    df_res.drop('marker', axis=1, inplace=True)
     df_res.rename({0: 'marker', 1: 'ref_chromosome', 2: 'ref_position'}, axis=1, inplace=True)
-    cols = list(df_res.columns[:5])
-    df_original = pd.read_csv(args.input, sep=',', comment="#")
-    cols += list(df_original.columns[3:])
-    df_res.columns = cols
+    cols = ['marker', 'ref_chromosome', 'ref_position', 'LG', 'cM'] + [l for l in range(3, max_col + 1)]
+    df_res = df_res[cols]
+
+    #cols = list(df_res.columns[:5])
+    #df_original = pd.read_csv(args.input, sep=',', comment="#", header=None)
+    #cols += list(df_original.columns[3:])
+    #df_res.columns = cols
     df_res.to_csv(args.output, sep=',', index=None)
 
     # order each LG respect to phisical position
