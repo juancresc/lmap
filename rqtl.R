@@ -9,8 +9,8 @@ maxrf <- args[2]
 
 minlod <- as.numeric(minlod)
 maxrf <- as.numeric(maxrf)
-minlod <- 6
-maxrf <- 0.35
+#minlod <- 6
+#maxrf <- 0.35
 library(qtl)
 #setwd(dirname(rstudioapi::getActiveDocumentContext()$path));
 mapthis <- read.cross("csv", getwd(), "rqtl.csv", crosstype = "riself", estimate.map= FALSE)
